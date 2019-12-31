@@ -4,7 +4,7 @@ set +e
 # build the executable
 docker run --rm -v $(pwd):/builddir -w /builddir -e CGO_ENABLED=0 -e GOOS=linux golang:1.13 go build -v -o ./build/api/api ./cmd/api
 
-export docker_repo=xanderflood/plaid-ui
+export docker_repo=xanderflood/fruit-pi-server
 export docker_build_directory=./build/api
 docker login -u $DOCKER_USER -p $DOCKER_PASS
 
