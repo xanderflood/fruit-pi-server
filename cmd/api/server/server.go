@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/xanderflood/fruit-pi-server/cmd/api/server/auth"
+	"github.com/xanderflood/fruit-pi-server/internal/pkg/db"
 	"github.com/xanderflood/fruit-pi-server/lib/tools"
-	"github.com/xanderflood/fruit-pi-server/pkg/db"
 )
 
 //Server is the gin server interface for the public API

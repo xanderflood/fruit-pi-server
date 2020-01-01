@@ -8,8 +8,8 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
+	"github.com/xanderflood/fruit-pi-server/internal/pkg/db"
 	"github.com/xanderflood/fruit-pi-server/lib/tools"
-	"github.com/xanderflood/fruit-pi-server/pkg/db"
 )
 
 //AuthorizationContextKey is the key used to store the Authorization

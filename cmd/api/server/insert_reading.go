@@ -1,18 +1,12 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/xanderflood/fruit-pi-server/lib/api"
 )
-
-//InsertReadingRequest encodes a single request for user registration
-type InsertReadingRequest struct {
-	TemperatureCelcius json.Number `json:"temperature_celcius" binding:"required"`
-	RelativeHumidity   json.Number `json:"relative_humidity" binding:"required"`
-}
 
 //InsertReading records a new reading from this device
 func (a ServerAgent) InsertReading(c *gin.Context) {
@@ -21,7 +15,7 @@ func (a ServerAgent) InsertReading(c *gin.Context) {
 		return
 	}
 
-	var req InsertReadingRequest
+	var req api.InsertReadingRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -36,8 +30,8 @@ func (a ServerAgent) InsertReading(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"device_uuid":  authorization.DeviceUUID,
-		"reading_uuid": uuid,
+	c.JSON(http.StatusOK, api.Reading{
+		DeviceUUID:  authorization.DeviceUUID,
+		ReadingUUID: uuid,
 	})
 }

@@ -11,8 +11,8 @@ import (
 
 	"github.com/xanderflood/fruit-pi-server/cmd/api/server"
 	"github.com/xanderflood/fruit-pi-server/cmd/api/server/auth"
+	"github.com/xanderflood/fruit-pi-server/internal/pkg/db"
 	"github.com/xanderflood/fruit-pi-server/lib/tools"
-	"github.com/xanderflood/fruit-pi-server/pkg/db"
 
 	//postgres driver for db/sql
 	_ "github.com/lib/pq"
