@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/xanderflood/fruit-pi-server/pkg/db"
+	"github.com/xanderflood/fruit-pi-server/internal/pkg/db"
 )
 
 //Authorization describes the authorities stored in a user JWT

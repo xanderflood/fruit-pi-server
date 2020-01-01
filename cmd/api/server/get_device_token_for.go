@@ -6,12 +6,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/xanderflood/fruit-pi-server/lib/api"
 )
-
-//GetDeviceTokenRequest encodes a single request for user registration
-type GetDeviceTokenRequest struct {
-	DeviceUUID string `json:"device_uuid" binding:"required"`
-}
 
 //GetDeviceTokenFor generates a device request token for the specified device
 func (a ServerAgent) GetDeviceTokenFor(c *gin.Context) {
@@ -25,7 +21,7 @@ func (a ServerAgent) GetDeviceTokenFor(c *gin.Context) {
 		return
 	}
 
-	var req GetDeviceTokenRequest
+	var req api.GetDeviceTokenRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -51,9 +47,9 @@ func (a ServerAgent) GetDeviceTokenFor(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"device_uuid": req.DeviceUUID,
-		"name":        device.Name,
-		"token":       tokenString,
+	c.JSON(http.StatusOK, api.Device{
+		DeviceUUID: req.DeviceUUID,
+		Name:       &device.Name,
+		Token:      &tokenString,
 	})
 }

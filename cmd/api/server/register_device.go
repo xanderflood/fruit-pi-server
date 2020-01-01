@@ -1,18 +1,12 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/xanderflood/fruit-pi-server/lib/api"
 )
-
-//RegistrationRequest encodes a single request for user registration
-type RegistrationRequest struct {
-	Name   string          `json:"name" binding:"required"`
-	Config json.RawMessage `json:"config" binding:"required"`
-}
 
 //RegisterDevice registers a device and responds with the newly generated UUID
 func (a ServerAgent) RegisterDevice(c *gin.Context) {
@@ -26,7 +20,7 @@ func (a ServerAgent) RegisterDevice(c *gin.Context) {
 		return
 	}
 
-	var req RegistrationRequest
+	var req api.RegistrationRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,9 +35,9 @@ func (a ServerAgent) RegisterDevice(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"device_uuid": uuid,
-		"name":        req.Name,
-		"config":      req.Config,
+	c.JSON(http.StatusOK, api.Device{
+		DeviceUUID: uuid,
+		Name:       &req.Name,
+		Config:     &req.Config,
 	})
 }
