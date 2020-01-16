@@ -27,7 +27,7 @@ func (a ServerAgent) ConfigureDevice(c *gin.Context) {
 		return
 	}
 
-	err = a.dbClient.ConfigureDevice(c, req.DeviceUUID, string(req.Config))
+	uuid, err := a.dbClient.ConfigureDevice(c, req.DeviceUUID, req.Name, string(req.Config))
 	if err != nil {
 		err = fmt.Errorf("configure device failed: %w", err)
 		a.logger.Errorf(err.Error())
@@ -37,6 +37,7 @@ func (a ServerAgent) ConfigureDevice(c *gin.Context) {
 
 	c.JSON(http.StatusOK, api.Device{
 		DeviceUUID: req.DeviceUUID,
+		Name:       &uuid,
 		Config:     &req.Config,
 	})
 }

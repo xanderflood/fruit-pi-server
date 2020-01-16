@@ -19,7 +19,7 @@ type DB interface {
 	EnsureReadingsTable(ctx context.Context) error
 
 	RegisterDevice(ctx context.Context, name string, config string) (string, error)
-	ConfigureDevice(ctx context.Context, uuid string, config string) error
+	ConfigureDevice(ctx context.Context, uuid string, name string, config string) (string, error)
 	GetDeviceByUUID(ctx context.Context, uuid string) (Device, error)
 
 	InsertReading(ctx context.Context, deviceUUID string, tCelcius json.Number, rh json.Number) (string, error)
