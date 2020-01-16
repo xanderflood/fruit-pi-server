@@ -5,25 +5,6 @@ import (
 	"fmt"
 )
 
-//EnsureDevicesTable EnsureDevicesTable
-func (a *DBAgent) EnsureDevicesTable(ctx context.Context) error {
-	_, err := a.db.ExecContext(ctx, `
-CREATE TABLE IF NOT EXISTS "devices"
-(	"uuid" UUID DEFAULT gen_random_uuid(),
-	"created_at" timestamp NOT NULL,
-	"modified_at" timestamp NOT NULL,
-	"deleted_at" timestamp,
-
-	"name" varchar NOT NULL,
-	"config" text NOT NULL,
-	PRIMARY KEY ("uuid")
-)`)
-	if err != nil {
-		return fmt.Errorf("failed to ensure accounts table: %w", err)
-	}
-	return nil
-}
-
 //RegisterDevice registers a new device in the table
 func (a *DBAgent) RegisterDevice(ctx context.Context, name string, config string) (string, error) {
 	row := a.db.QueryRowContext(ctx, `
@@ -48,18 +29,50 @@ INSERT INTO "devices" (
 	return uuid, nil
 }
 
-//ConfigureDevice updates a device's configuration
-func (a *DBAgent) ConfigureDevice(ctx context.Context, uuid string, config string) error {
+//EnsureDevicesTable EnsureDevicesTable
+func (a *DBAgent) EnsureDevicesTable(ctx context.Context) error {
 	_, err := a.db.ExecContext(ctx, `
-UPDATE "devices"
-SET "config" = $1
-WHERE "uuid" = $2`,
-		config, uuid,
-	)
+CREATE TABLE IF NOT EXISTS "devices"
+(	"uuid" UUID DEFAULT gen_random_uuid(),
+	"created_at" timestamp NOT NULL,
+	"modified_at" timestamp NOT NULL,
+	"deleted_at" timestamp,
+
+	"name" varchar NOT NULL,
+	"config" text NOT NULL,
+	PRIMARY KEY ("uuid")
+)`)
 	if err != nil {
-		return fmt.Errorf("failed to update device config: %w", err)
+		return fmt.Errorf("failed to ensure accounts table: %w", err)
 	}
 	return nil
+}
+
+//ConfigureDevice updates a device's configuration
+func (a *DBAgent) ConfigureDevice(ctx context.Context, uuid string, name string, config string) (string, error) {
+	_, err := a.db.ExecContext(ctx, `
+INSERT INTO "devices" (
+	"created_at",
+	"modified_at",
+
+	"uuid",
+	"name",
+	"config"
+) VALUES (
+	NOW(), NOW(),
+	$1, $2, $3
+)
+
+ON CONFLICT (uuid) DO UPDATE
+SET "name" = $2,
+	"config" = $3
+RETURNING "uuid"`,
+		uuid, name, config,
+	)
+	if err != nil {
+		return "", fmt.Errorf("failed to update device config: %w", err)
+	}
+	return uuid, nil
 }
 
 //GetDeviceByUUID gets a device by UUID
