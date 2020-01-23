@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/xanderflood/fruit-pi-server/lib/api"
 )
 
 //GetDeviceConfig gets the current configuration text for the device
@@ -15,9 +16,21 @@ func (a ServerAgent) GetDeviceConfig(c *gin.Context) {
 		return
 	}
 
-	//no body - the JWT needs to contain the device UUID
+	var req api.GetDeviceConfigRequest
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	device, err := a.dbClient.GetDeviceByUUID(c, authorization.DeviceUUID)
+	var uuid string
+	if authorization.Admin && req.DeviceUUID != nil {
+		uuid = *req.DeviceUUID
+	} else {
+		uuid = authorization.DeviceUUID
+	}
+
+	device, err := a.dbClient.GetDeviceByUUID(c, uuid)
 	if err != nil {
 		err = fmt.Errorf("get device failed: %w", err)
 		a.logger.Errorf(err.Error())

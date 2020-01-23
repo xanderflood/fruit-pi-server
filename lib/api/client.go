@@ -66,6 +66,7 @@ func NewDefaultClient(
 type API interface {
 	//device endpoints - device UUID is inferred from token
 	GetDeviceConfig(ctx context.Context) (Device, error)
+	GetDeviceConfigFor(ctx context.Context, uuid string) (Device, error)
 	InsertReading(ctx context.Context, tCelcius float64, rh float64) (Reading, error)
 
 	//admin endpoints
@@ -78,26 +79,9 @@ type API interface {
 // Device endpoints
 ////////////////////
 
-//GetDeviceConfig gets the current config text for current the device
+//GetDeviceConfig gets the current config text for the current device
 func (c Client) GetDeviceConfig(ctx context.Context) (device Device, err error) {
-	req, err := c.buildJSONRequest(ctx, http.MethodGet, "/api/v1/get-device-config", nil)
-	if err != nil {
-		return
-	}
-
-	resp, err := c.http.Do(req)
-	if err != nil {
-		err = fmt.Errorf("failed making get-device-config request: %w", err)
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		err = responseError(resp, true)
-		return
-	}
-
-	err = decodeJSONBody(resp, &device)
-	return
+	return c.getDeviceConfigHelper(ctx, nil)
 }
 
 //InsertReading records a new sensor reading for current the device
@@ -131,6 +115,11 @@ func (c Client) InsertReading(ctx context.Context, tCelcius float64, rh float64)
 ///////////////////
 // Admin endpoints
 ///////////////////
+
+//GetDeviceConfigFor gets the current config text for the specified device
+func (c Client) GetDeviceConfigFor(ctx context.Context, uuid string) (device Device, err error) {
+	return c.getDeviceConfigHelper(ctx, GetDeviceConfigRequest{DeviceUUID: &uuid})
+}
 
 //RegisterDevice registers a new device
 func (c Client) RegisterDevice(ctx context.Context, name string, config string) (device Device, err error) {
@@ -274,4 +263,25 @@ func responseError(resp *http.Response, body bool) error {
 
 func toJSONNumber(f float64) json.Number {
 	return json.Number(strconv.FormatFloat(f, 'f', -1, 64))
+}
+
+func (c Client) getDeviceConfigHelper(ctx context.Context, body interface{}) (device Device, err error) {
+	req, err := c.buildJSONRequest(ctx, http.MethodGet, "/api/v1/get-device-config", body)
+	if err != nil {
+		return
+	}
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		err = fmt.Errorf("failed making get-device-config request: %w", err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		err = responseError(resp, true)
+		return
+	}
+
+	err = decodeJSONBody(resp, &device)
+	return
 }
