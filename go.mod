@@ -9,6 +9,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gin-gonic/gin v1.5.0
+	github.com/hashicorp/terraform-plugin-sdk v1.5.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a // indirect
 	github.com/juju/loggo v0.0.0-20190526231331-6e530bcce5d8
