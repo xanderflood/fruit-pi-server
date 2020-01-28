@@ -20,14 +20,14 @@ func Provider() terraform.ResourceProvider {
 			"token": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ADMIN_JWT", nil),
+				DefaultFunc: schema.EnvDefaultFunc("FRUIT_PI_ADMIN_JWT", nil),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"fruit_pi_device": resourceDevice,
+			"fruitpi_device": resourceDevice,
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"fruit_pi_device_token": dataSourceDeviceToken,
+			"fruitpi_device_token": dataSourceDeviceToken,
 		},
 		ConfigureFunc: configureProvider,
 	}
@@ -41,7 +41,7 @@ type FruitPiMeta struct {
 func configureProvider(r *schema.ResourceData) (interface{}, error) {
 	return &FruitPiMeta{
 		API: api.NewDefaultClient(
-			stripTrailingSlash(r.Get("api_url").(string)),
+			stripTrailingSlash(r.Get("server_url").(string)),
 			http.DefaultTransport,
 			r.Get("token").(string),
 		),

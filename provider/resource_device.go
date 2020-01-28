@@ -47,9 +47,10 @@ func resourceDeviceCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceDeviceUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*FruitPiMeta).API
+	name := d.Get("name").(string)
 	config := d.Get("config").(string)
 
-	_, err := client.ConfigureDevice(context.Background(), d.Id(), config)
+	_, err := client.ConfigureDevice(context.Background(), d.Id(), name, config)
 	if err != nil {
 		return err
 	}
