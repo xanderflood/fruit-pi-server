@@ -43,6 +43,7 @@ func AddRoutes(e *gin.Engine, a Server) {
 	backend.POST("/configure-device", a.ConfigureDevice)
 	backend.POST("/insert-reading", a.InsertReading)
 	backend.GET("/get-device-config", a.GetDeviceConfig)
+	backend.GET("/get-device-config/:uuid", a.GetDeviceConfig)
 	backend.POST("/get-device-token", a.GetDeviceTokenFor)
 }
 
