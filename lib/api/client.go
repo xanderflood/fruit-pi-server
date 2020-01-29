@@ -66,7 +66,6 @@ func NewDefaultClient(
 type API interface {
 	//device endpoints - device UUID is inferred from token
 	GetDeviceConfig(ctx context.Context) (Device, error)
-	GetDeviceConfigFor(ctx context.Context, uuid string) (Device, error)
 	InsertReading(ctx context.Context, tCelcius float64, rh float64) (Reading, error)
 
 	//admin endpoints
