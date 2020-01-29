@@ -71,8 +71,9 @@ type API interface {
 
 	//admin endpoints
 	RegisterDevice(ctx context.Context, name string, config string) (Device, error)
-	ConfigureDevice(ctx context.Context, uuid string, config string) (Device, error)
+	ConfigureDevice(ctx context.Context, uuid string, name string, config string) (Device, error)
 	GetDeviceTokenFor(ctx context.Context, uuid string) (Device, error)
+	GetDeviceConfigFor(ctx context.Context, uuid string) (device Device, err error)
 }
 
 ////////////////////
@@ -81,7 +82,7 @@ type API interface {
 
 //GetDeviceConfig gets the current config text for the current device
 func (c Client) GetDeviceConfig(ctx context.Context) (device Device, err error) {
-	return c.getDeviceConfigHelper(ctx, nil)
+	return c.getDeviceConfigHelper(ctx, "/api/v1/get-device-config")
 }
 
 //InsertReading records a new sensor reading for current the device
@@ -118,7 +119,7 @@ func (c Client) InsertReading(ctx context.Context, tCelcius float64, rh float64)
 
 //GetDeviceConfigFor gets the current config text for the specified device
 func (c Client) GetDeviceConfigFor(ctx context.Context, uuid string) (device Device, err error) {
-	return c.getDeviceConfigHelper(ctx, GetDeviceConfigRequest{DeviceUUID: &uuid})
+	return c.getDeviceConfigHelper(ctx, "/api/v1/get-device-config/"+uuid)
 }
 
 //RegisterDevice registers a new device
@@ -179,12 +180,13 @@ func (c Client) GetDeviceTokenFor(ctx context.Context, uuid string) (device Devi
 }
 
 //ConfigureDevice configures the specified device
-func (c Client) ConfigureDevice(ctx context.Context, uuid string, config string) (device Device, err error) {
+func (c Client) ConfigureDevice(ctx context.Context, uuid string, name string, config string) (device Device, err error) {
 	req, err := c.buildJSONRequest(
 		ctx, http.MethodPost,
 		"/api/v1/configure-device",
 		ConfigureDeviceRequest{
 			DeviceUUID: uuid,
+			Name:       name,
 			Config:     json.RawMessage(config),
 		},
 	)
@@ -265,8 +267,8 @@ func toJSONNumber(f float64) json.Number {
 	return json.Number(strconv.FormatFloat(f, 'f', -1, 64))
 }
 
-func (c Client) getDeviceConfigHelper(ctx context.Context, body interface{}) (device Device, err error) {
-	req, err := c.buildJSONRequest(ctx, http.MethodGet, "/api/v1/get-device-config", body)
+func (c Client) getDeviceConfigHelper(ctx context.Context, path string) (device Device, err error) {
+	req, err := c.buildJSONRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return
 	}

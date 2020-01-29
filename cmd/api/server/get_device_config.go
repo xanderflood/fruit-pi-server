@@ -9,6 +9,12 @@ import (
 	"github.com/xanderflood/fruit-pi-server/lib/api"
 )
 
+//
+// TODO: rename to simply get-device and do a little refactoring
+//  so that new fields are always included on all endpoints - that'll
+//  help avoid spurious diffs in the terraform provider.
+//
+
 //GetDeviceConfig gets the current configuration text for the device
 func (a ServerAgent) GetDeviceConfig(c *gin.Context) {
 	authorization, ok := a.authorize(c)
@@ -17,7 +23,7 @@ func (a ServerAgent) GetDeviceConfig(c *gin.Context) {
 	}
 
 	var req api.GetDeviceConfigRequest
-	err := c.ShouldBindJSON(&req)
+	err := c.ShouldBindUri(&req)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -39,7 +45,8 @@ func (a ServerAgent) GetDeviceConfig(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"device_uuid": authorization.DeviceUUID,
+		"device_uuid": uuid,
+		"name":        device.Name,
 		"config":      json.RawMessage(device.Config),
 	})
 }

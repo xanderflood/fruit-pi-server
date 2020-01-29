@@ -19,7 +19,7 @@ type GetDeviceTokenRequest struct {
 
 //GetDeviceConfigRequest encodes a single request for user registration
 type GetDeviceConfigRequest struct {
-	DeviceUUID *string `json:"device_uuid"`
+	DeviceUUID *string `uri:"uuid"`
 }
 
 //ConfigureDeviceRequest encodes a single request for user registration
